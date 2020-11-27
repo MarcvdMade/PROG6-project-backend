@@ -24,6 +24,14 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended : true}))
 
+// main route
+app.get('/', (req, res) => {
+    console.log('End point /')
+
+    res.header("Content-Type", "application/json")
+    res.send("{ \"message\": \"Hello World!\" }")
+})
+
 let bandsRouter = require('./routes/bandsRoutes')();
 
 app.use('/api', bandsRouter)
