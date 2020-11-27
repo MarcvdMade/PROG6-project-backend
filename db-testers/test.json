@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Metallica",
+        "rating": "7",
+        "mainGenre": "Thrash metal"
+    },
+    {
+        "name": "Slipknot",
+        "rating": "8",
+        "mainGenre": "Nu-metal"
+    }
+]

@@ -1,0 +1,1 @@
+This is a MERN (mongodb, expressjs, reactjs and nodejs) stack project for school. Using restAPI I created a collection of the bands I listen.
