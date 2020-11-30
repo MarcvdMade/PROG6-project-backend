@@ -18,6 +18,7 @@ let router = () => {
 
     //get all bands
     bandsRouter.get('/bands', async (req, res) => {
+        
         try {
             let bands = await Band.find()
 
@@ -73,11 +74,19 @@ let router = () => {
 
     // get one band
     bandsRouter.get('/bands/:id', getBand, (req, res) => {
-        res.json(res.band)
+        let band = res.band.toJSON()
+
+        band._links = {
+            "self": {"href": "http://" + req.headers.host + "/api/bands/" + band._id},
+            "collection": {"href": "http://" + req.headers.host + "/api/bands"}
+        }
+
+        res.json(band)
+
     })
 
-    //update band TODO
-    bandsRouter.patch('/bands/:id', getBand, async (req, res) => {
+    //update band
+    bandsRouter.put('/bands/:id', getBand, async (req, res) => {
         console.log("trying to update")
 
         if (req.body.name != null) {
@@ -102,7 +111,7 @@ let router = () => {
     bandsRouter.delete('/bands/:id', getBand, async (req, res) => {
         try {
             await res.band.remove()
-            res.send({ message: 'Band is deleted' })
+            res.status(204).send({ message: 'Band is deleted' })
         } catch (err) {
             res.status(500).send({ message: err.message })
         }
@@ -111,7 +120,7 @@ let router = () => {
     // options for single band
     bandsRouter.options('/bands/:id', (req, res) => {
         console.log("requested options")
-        res.header("Allow", "DELETE, GET, PATCH, OPTIONS").send()
+        res.header("Allow", "DELETE, GET, PUT, OPTIONS").send()
     })
 
     async function getBand(req, res, next) {

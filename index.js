@@ -9,6 +9,7 @@ const app = express()
 //connect db
 let mongoose = require('mongoose')
 
+// if connecting to vps use "mongodb://localhost/myBands" else process.env.DATABASE_URL
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
 const db = mongoose.connection
 
