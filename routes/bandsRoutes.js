@@ -77,23 +77,25 @@ let router = () => {
     })
 
     //update band TODO
-    bandsRouter.patch('/bands/:id', getBand, async (res, req) => {
-        // if (req.body.name != null) {
-        //     res.band.name = req.body.name
-        // }
-        // if (req.body.rating != null) {
-        //     res.band.rating = req.body.rating
-        // }
-        // if (req.body.mainGenre != null) {
-        //     res.band.mainGenre = req.body.mainGenre
-        // }
+    bandsRouter.patch('/bands/:id', getBand, async (req, res) => {
+        console.log("trying to update")
 
-        // try {
-        //     const updatedBand = await res.band.save()
-        //     res.json(updatedBand)
-        // } catch(err) {
-        //     res.status(400).send({ message: err.message})
-        // }
+        if (req.body.name != null) {
+            res.band.name = req.body.name
+        }
+        if (req.body.rating != null) {
+            res.band.rating = req.body.rating
+        }
+        if (req.body.mainGenre != null) {
+            res.band.mainGenre = req.body.mainGenre
+        }
+
+        try {
+            const updatedBand = await res.band.save()
+            res.json(updatedBand)
+        } catch (err) {
+            res.status(400).send({ message: err.message })
+        }
     })
 
     // delete band
