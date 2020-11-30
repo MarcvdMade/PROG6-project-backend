@@ -22,12 +22,12 @@ let router = () => {
             let bands = await Band.find()
 
             let bandCollection = {
-                "items" : [],
-                "_links" : {
-                    "self" : {"href": "http://" + req.headers.host + "/api/bands"},
-                    "collection" : {"href": "http://" + req.headers.host + "/api/bands"}
+                "items": [],
+                "_links": {
+                    "self": { "href": "http://" + req.headers.host + "/api/bands" },
+                    "collection": { "href": "http://" + req.headers.host + "/api/bands" }
                 },
-                "pagination" : { "message": "TO-DO"}
+                "pagination": { "message": "TO-DO" }
             }
 
             for (let b of bands) {
@@ -35,10 +35,10 @@ let router = () => {
                 let bandItem = b.toJSON()
 
                 bandItem._links =
-                    {
-                        "self" : { "href" : "http://" + req.headers.host + "/api/bands/" + bandItem._id },
-                        "collection" : { "href" : "http://" + req.headers.host + "/api/bands" }
-                    }
+                {
+                    "self": { "href": "http://" + req.headers.host + "/api/bands/" + bandItem._id },
+                    "collection": { "href": "http://" + req.headers.host + "/api/bands" }
+                }
 
                 bandCollection.items.push(bandItem)
             }
@@ -48,16 +48,6 @@ let router = () => {
         } catch (err) {
             res.status(500).send(err)
         }
-    })
-
-    bandsRouter.options('/bands', (req, res) => {
-        console.log("requested options")
-        res.header("Allow", "POST, GET, OPTIONS").send()
-    })
-
-    // get one band
-    bandsRouter.get('/bands/:id', getBand, (req, res) => {
-        res.json(res.band)
     })
 
     // add a new band
@@ -73,6 +63,17 @@ let router = () => {
         } catch (err) {
             res.status(400).send({ message: err.message })
         }
+    })
+
+    // options for collection
+    bandsRouter.options('/bands', (req, res) => {
+        console.log("requested options")
+        res.header("Allow", "POST, GET, OPTIONS").send()
+    })
+
+    // get one band
+    bandsRouter.get('/bands/:id', getBand, (req, res) => {
+        res.json(res.band)
     })
 
     //update band TODO
@@ -105,6 +106,12 @@ let router = () => {
         }
     })
 
+    // options for single band
+    bandsRouter.options('/bands/:id', (req, res) => {
+        console.log("requested options")
+        res.header("Allow", "DELETE, GET, PATCH, OPTIONS").send()
+    })
+
     async function getBand(req, res, next) {
         let band
         try {
@@ -121,7 +128,7 @@ let router = () => {
     }
 
     return bandsRouter
-    
+
 }
 
 module.exports = router
