@@ -1,4 +1,6 @@
 let express = require('express')
+const { where } = require('../models/bandModel')
+
 
 let Band = require('../models/bandModel')
 
@@ -6,7 +8,13 @@ let router = () => {
 
     let bandsRouter = express.Router()
 
-    bandsRouter.use('/', (req, res, next) => {
+    bandsRouter.use('/bands', (req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*")
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+        next()
+    })
+
+    bandsRouter.use('/bands', (req, res, next) => {
         let acceptType = req.get("Accept")
 
         if (acceptType == "application/json") {
@@ -20,15 +28,24 @@ let router = () => {
     bandsRouter.get('/bands', async (req, res) => {
         
         try {
+            // pagination
+            const page = parseInt(req.query.start) 
+            const limit = parseInt(req.query.limit)
+
+
             let bands = await Band.find()
+            .limit(limit * 1)
+            .skip((page -1) * limit)
+            .exec()
+
+            const count = await Band.countDocuments()
 
             let bandCollection = {
                 "items": [],
                 "_links": {
                     "self": { "href": "http://" + req.headers.host + "/api/bands" },
                     "collection": { "href": "http://" + req.headers.host + "/api/bands" }
-                },
-                "pagination": { "message": "TO-DO" }
+                }
             }
 
             for (let b of bands) {
@@ -42,6 +59,66 @@ let router = () => {
                 }
 
                 bandCollection.items.push(bandItem)
+            }
+
+            bandCollection.pagination = {
+                "currentPage": page,
+                "currentItems": bandCollection.items.length, 
+                "totalPages": Math.ceil(count / limit),
+                "totalItems": count
+            }
+
+            // Bad code probably a better way of doing this but idk
+            let startUrl = "http://" + req.headers.host + "/api/bands"
+            let limitUrl = "&limit=" + limit
+            let firstUrl
+            let lastUrl
+            let previousUrl
+            let nextUrl
+
+            if (req.query.start) {
+                console.log(page)
+                firstUrl = startUrl + "?start=1&limit=" + limit
+                lastUrl = startUrl + "?start=" + Math.ceil(count / limit) + limitUrl
+
+                if(page == 1) {
+                    previousUrl = firstUrl
+                } else {
+                    previousUrl = startUrl + "?start=" + parseInt(page - 1) + limitUrl
+                }
+
+                if (page == Math.ceil(count / limit)) {
+                    nextUrl = lastUrl
+                } else {
+                    nextUrl = startUrl + "?start=" + parseInt(page + 1) + limitUrl
+                }
+
+            } else {
+                firstUrl = startUrl
+                lastUrl = startUrl
+                previousUrl = startUrl
+                nextUrl = startUrl
+            }
+
+
+            bandCollection.pagination._links =
+            {
+                "first": {
+                    "page": 1,
+                    "href": firstUrl, 
+                },
+                "last": {
+                    "page": Math.ceil(count / limit),
+                    "href": lastUrl
+                },
+                "previous": {
+                    "page": page - 1,
+                    "href": previousUrl
+                },
+                "next": {
+                    "page": page + 1,
+                    "href": nextUrl
+                }
             }
 
             res.json(bandCollection)
@@ -69,7 +146,9 @@ let router = () => {
     // options for collection
     bandsRouter.options('/bands', (req, res) => {
         console.log("requested options")
-        res.header("Allow", "POST, GET, OPTIONS").send()
+        res.header("Allow", "POST, GET, OPTIONS")
+        res.header("Access-Control-Allow-Methods", 'POST, GET, OPTIONS').send()
+        
     })
 
     // get one band
@@ -120,9 +199,11 @@ let router = () => {
     // options for single band
     bandsRouter.options('/bands/:id', (req, res) => {
         console.log("requested options")
-        res.header("Allow", "DELETE, GET, PUT, OPTIONS").send()
+        res.header("Allow", "DELETE, GET, PUT, OPTIONS")
+        res.header("Access-Control-Allow-Methods", 'DELETE, GET, PUT, OPTIONS').send()
     })
 
+    //function to find the band by id
     async function getBand(req, res, next) {
         let band
         try {

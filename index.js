@@ -1,3 +1,4 @@
+//use dotenv
 require('dotenv').config()
 
 //use express
@@ -38,4 +39,4 @@ let bandsRouter = require('./routes/bandsRoutes')();
 app.use('/api', bandsRouter)
 
 //start web server on port 8000
-app.listen(8000, ()=> console.log("Starting REST API on http://localhost:8000/"))
+app.listen(8000, () => console.log("Starting REST API..."))
