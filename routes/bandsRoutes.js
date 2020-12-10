@@ -81,17 +81,9 @@ let router = () => {
                 firstUrl = startUrl + "?start=1&limit=" + limit
                 lastUrl = startUrl + "?start=" + Math.ceil(count / limit) + limitUrl
 
-                if(page == 1) {
-                    previousUrl = firstUrl
-                } else {
-                    previousUrl = startUrl + "?start=" + parseInt(page - 1) + limitUrl
-                }
+                previousUrl = page == 1 ? firstUrl : startUrl + "?start=" + parseInt(page - 1) + limitUrl
 
-                if (page == Math.ceil(count / limit)) {
-                    nextUrl = lastUrl
-                } else {
-                    nextUrl = startUrl + "?start=" + parseInt(page + 1) + limitUrl
-                }
+                nextUrl = page > Math.ceil(count / limit) ? lastUrl : startUrl + "?start=" + parseInt(page + 1) + limitUrl
 
             } else {
                 firstUrl = startUrl
