@@ -14,15 +14,15 @@ let router = () => {
         next()
     })
 
-    bandsRouter.use('/bands', (req, res, next) => {
-        let acceptType = req.get("Accept")
+    // bandsRouter.use('/bands', (req, res, next) => {
+    //     let acceptType = req.get("Accept")
 
-        if (acceptType == "application/json") {
-            next()
-        } else {
-            res.status(400).send()
-        }
-    })
+    //     if (acceptType == "application/json") {
+    //         next()
+    //     } else {
+    //         res.status(400).send()
+    //     }
+    // })
 
     //get all bands
     bandsRouter.get('/bands', async (req, res) => {
