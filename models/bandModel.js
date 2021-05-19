@@ -5,7 +5,7 @@ let Schema = mongoose.Schema
 //schema for a post
 let bandModel = new Schema(
     {
-        name: { type: String, required: true},
+        name: { type: String, required: true, unique: true},
         rating: { type: String, required: true},
         mainGenre: { type: String, required: true}
     }
